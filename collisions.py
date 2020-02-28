@@ -32,7 +32,7 @@ def ballColl():          # Checks for ball-ball collisions
                 collision(ballList[i], ballList[j])
 
 
-def collision(ball1, ball2):
+def collision(ball1, ball2):        # Handles ball-ball collisions
     pass
 
 
