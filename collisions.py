@@ -1,3 +1,4 @@
+from __future__ import division
 import pygame
 
 
@@ -9,7 +10,7 @@ class Ball:
         self.velY = vy
         self.colour = col
         self.rad = r
-        self.m = m
+        self.mass = m
 
     def setPos(self):
         self.posX = int(self.posX + self.velX)
@@ -33,7 +34,14 @@ def ballColl():          # Checks for ball-ball collisions
 
 
 def collision(ball1, ball2):        # Handles ball-ball collisions
-    pass
+    dsq = distanceSq(ball1, ball2)
+    f1 = ((ball1.velX - ball2.velX)*(ball1.posX - ball2.posX) + (ball1.velY - ball2.velY)*(ball1.posY - ball2.posY)) / dsq
+    f2 = ((ball2.velX - ball1.velX)*(ball2.posX - ball1.posX) + (ball2.velY - ball1.velY)*(ball2.posY - ball1.posY)) / dsq
+    ball1.velX -= (2 * ball2.mass / (ball1.mass + ball2.mass)) * f1 * (ball1.posX - ball2.posX)
+    ball1.velY = ball1.velY - (2 * ball2.mass / (ball1.mass + ball2.mass)) * f1 * (ball1.posY - ball2.posY)
+    ball2.velX = ball2.velX - (2 * ball1.mass / (ball1.mass + ball2.mass)) * f2 * (ball2.posX - ball1.posX)
+    ball2.velY = ball2.velY - (2 * ball1.mass / (ball1.mass + ball2.mass)) * f2 * (ball2.posY - ball1.posY)
+    #p = (2 * ball2.mass / (ball1.mass + ball2.mass)) * f1 * (ball1.posX - ball2.posX)
 
 
 def distanceSq(ballX, ballY):
@@ -56,23 +64,23 @@ BLACK = (0, 0, 0)
 GREEN = (0, 128, 0)
 RED = (255, 0, 0)
 TEST = (128, 128, 128)
-ball1 = Ball(25, 25, 20, 1, 5, 5, WHITE)
-ball2 = Ball(160, 110, 20, 1, 4, -4, GREEN)
-ball3 = Ball(310, 280, 40, 1, -3, 4, RED)
+ball1 = Ball(25, 25, 20, 1, 3, 3, WHITE)
+ball2 = Ball(160, 110, 20, 1, 2, -3, GREEN)
+ball3 = Ball(310, 280, 40, 2, -3, 3, RED)
 ballList = [ball2, ball1, ball3]
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption('Collision')
 
 def main():
+    print(ball1.velX)
     screen.fill(BLACK)
     for ball in ballList:
         ball.draw()
-    pygame.display.flip()
-    for ball in ballList:
-        ball.setPos()
         ball.wallColl()
+        ball.setPos()
+    pygame.display.flip()
     ballColl()
 
 while True:
     main()
-    fps.tick(60)
+    fps.tick(40)
